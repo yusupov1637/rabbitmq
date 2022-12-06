@@ -1,9 +1,9 @@
-package com.example.config;
+package com.example;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.HeadersExchange;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
@@ -14,40 +14,40 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbbitmqConfig {
 
-    public static final String ROUTING_A = "routing.A";
-    public static final String ROUTING_B = "routing.B";
+    public static final String ROUTING_A = "routing.C";
+    public static final String ROUTING_B = "routing.D";
 
     @Bean
     Queue queueA(){
-        return new Queue("queue.A",false);
+        return new Queue("queue.C",false);
     }
     @Bean
     Queue queueB(){
-        return new Queue("queue.B",false);
+        return new Queue("queue.D",false);
     }
 
     @Bean
     Queue queueAll(){
-        return new Queue("queue.all",false);
+        return new Queue("queue.alll",false);
     }
 
     @Bean
-    HeadersExchange exchange(){
-        return new HeadersExchange("exchange.header");
+    TopicExchange exchange(){
+        return new TopicExchange("exchange.topic");
     }
 
     @Bean
-    Binding binding(Queue queueA,HeadersExchange exchange){
-        return BindingBuilder.bind(queueA).to(exchange).where("color").matches("red");
+    Binding binding(Queue queueA,TopicExchange exchange){
+        return BindingBuilder.bind(queueA).to(exchange).with(ROUTING_A);
     }
     @Bean
-    Binding bindingB(Queue queueB,HeadersExchange exchange){
-        return BindingBuilder.bind(queueB).to(exchange).where("color").matches("blue");
+    Binding bindingB(Queue queueB,TopicExchange exchange){
+        return BindingBuilder.bind(queueB).to(exchange).with(ROUTING_B);
     }
 
     @Bean
-    Binding bindingAll(Queue queueAll,HeadersExchange exchange){
-        return BindingBuilder.bind(queueAll).to(exchange).where("color").matches("green");
+    Binding bindingAll(Queue queueAll,TopicExchange exchange){
+        return BindingBuilder.bind(queueAll).to(exchange).with("routing.**");
     }
 
 

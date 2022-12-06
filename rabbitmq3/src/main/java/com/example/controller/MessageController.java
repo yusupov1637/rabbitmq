@@ -1,11 +1,12 @@
 package com.example.controller;
 
 import com.example.model.Message;
-import org.springframework.amqp.core.DirectExchange;
-import org.springframework.amqp.core.FanoutExchange;
-import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.amqp.support.converter.SimpleMessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,13 +19,22 @@ public class MessageController {
     private RabbitTemplate template;
 
 @Autowired
-    private FanoutExchange exchange;
+    private HeadersExchange exchange;
 
 
 
-    @PostMapping("/post")
-    public String send(@RequestBody Message message){
-        template.convertAndSend(exchange.getName(),"",message);
+    @PostMapping("/post/{message}")
+    public String send(@PathVariable(value = "message") String message){
+       // template.convertAndSend(exchange.getName(),"routing.A",message);
+
+        MessageProperties messageProperties=new MessageProperties();
+        messageProperties.setHeader("color",message);
+
+        MessageConverter converter=new SimpleMessageConverter();
+
+        org.springframework.amqp.core.Message message1=converter.toMessage(message,messageProperties);
+
+        template.send(exchange.getName(),"",message1);
         return "Success";
     }
 }

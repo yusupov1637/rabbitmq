@@ -1,9 +1,6 @@
-package com.example.config;
+package com.example;
 
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.HeadersExchange;
-import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
@@ -32,22 +29,22 @@ public class RabbbitmqConfig {
     }
 
     @Bean
-    HeadersExchange exchange(){
-        return new HeadersExchange("exchange.header");
+    TopicExchange exchange(){
+        return new TopicExchange("exchange.topic");
     }
 
     @Bean
-    Binding binding(Queue queueA,HeadersExchange exchange){
-        return BindingBuilder.bind(queueA).to(exchange).where("color").matches("red");
+    Binding binding(Queue queueA,TopicExchange exchange){
+        return BindingBuilder.bind(queueA).to(exchange).with(ROUTING_A);
     }
     @Bean
-    Binding bindingB(Queue queueB,HeadersExchange exchange){
-        return BindingBuilder.bind(queueB).to(exchange).where("color").matches("blue");
+    Binding bindingB(Queue queueB,TopicExchange exchange){
+        return BindingBuilder.bind(queueB).to(exchange).with(ROUTING_B);
     }
 
     @Bean
-    Binding bindingAll(Queue queueAll,HeadersExchange exchange){
-        return BindingBuilder.bind(queueAll).to(exchange).where("color").matches("green");
+    Binding bindingAll(Queue queueAll,TopicExchange exchange){
+        return BindingBuilder.bind(queueAll).to(exchange).with("routing.*");
     }
 
 

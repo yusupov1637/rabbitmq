@@ -24,17 +24,27 @@ public class RabbbitmqConfig {
     }
 
     @Bean
-    FanoutExchange exchange(){
-        return new FanoutExchange("exchange.fanout");
+    Queue queueAll(){
+        return new Queue("queue.all",false);
     }
 
     @Bean
-    Binding binding(Queue queueA,FanoutExchange exchange){
-        return BindingBuilder.bind(queueA).to(exchange)/*.with(ROUTING_A)*/;
+    HeadersExchange exchange(){
+        return new HeadersExchange("exchange.header");
+    }
+
+    @Bean
+    Binding binding(Queue queueA,HeadersExchange exchange){
+        return BindingBuilder.bind(queueA).to(exchange).where("color").matches("red");
     }
     @Bean
-    Binding bindingB(Queue queueB,FanoutExchange exchange){
-        return BindingBuilder.bind(queueB).to(exchange)/*.with(ROUTING_B)*/;
+    Binding bindingB(Queue queueB,HeadersExchange exchange){
+        return BindingBuilder.bind(queueB).to(exchange).where("color").matches("blue");
+    }
+
+    @Bean
+    Binding bindingAll(Queue queueAll,HeadersExchange exchange){
+        return BindingBuilder.bind(queueAll).to(exchange).where("color").matches("green");
     }
 
 

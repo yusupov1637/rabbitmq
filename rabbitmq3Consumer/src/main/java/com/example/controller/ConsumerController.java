@@ -11,12 +11,17 @@ import org.springframework.stereotype.Component;
 public class ConsumerController {
 
     @RabbitListener(queues = "queue.A")
-    private void recieve(Message message){
+    private void recieve(String message){
         log.info("Queue A->{}",message);
     }
 
     @RabbitListener(queues = "queue.B")
-    private void recieveB(Message message){
+    private void recieveB(String message){
         log.info("Queue B->{}",message);
+    }
+
+    @RabbitListener(queues = "queue.all")
+    private void recieveALl(String message){
+        log.info("Queue All->{}",message);
     }
 }
